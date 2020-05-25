@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// fix error
 const PinSchema = new mongoose.Schema(
 	{
 		title: String,
