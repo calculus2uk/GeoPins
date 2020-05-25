@@ -7,13 +7,22 @@ import AddAPhotoIcon from '@material-ui/icons/AddAPhotoTwoTone';
 import LandscapeIcon from '@material-ui/icons/LandscapeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/SaveTwoTone';
+import { GraphQLClient } from 'graphql-request';
+
 import Context from '../../context';
+import { CREATE_PIN_MUTATION } from '../../graphql/mutations';
 
 const CreatePin = ({ classes }) => {
-	const { dispatch } = useContext(Context);
+	const {
+		state: {
+			draft: { latitude, longitude },
+		},
+		dispatch,
+	} = useContext(Context);
 	const [title, setTitle] = useState('');
 	const [image, setImage] = useState('');
 	const [content, setContent] = useState('');
+	const [submitting, setSubmitting] = useState(false);
 
 	const handleDeleteDraft = () => {
 		setTitle('');
@@ -21,9 +30,49 @@ const CreatePin = ({ classes }) => {
 		setContent('');
 		dispatch({ type: 'DELETE_DRAFT_PIN' });
 	};
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		console.log({ title, image, content });
+	const handleImageUpload = async () => {
+		const data = new FormData();
+		data.append('file', image);
+		data.append('upload_preset', 'geopinss');
+		data.append('cloud_name', 'affycent');
+		const response = await fetch(
+			'https://api.cloudinary.com/v1_1/affycent/image/upload',
+			{
+				method: 'POST',
+				body: data,
+			},
+		);
+		const preData = await response.json();
+
+		return preData.url;
+	};
+
+	const handleSubmit = async (e) => {
+		try {
+			e.preventDefault();
+			setSubmitting(true);
+			const idToken = window.gapi.auth2
+				.getAuthInstance()
+				.currentUser.get()
+				.getAuthResponse().id_token;
+			const client = new GraphQLClient(
+				process.env.REACT_APP_GEOPINS_SERVER_URL,
+				{
+					headers: { authorization: idToken },
+				},
+			);
+			const url = await handleImageUpload();
+			const variables = { title, image: url, content, latitude, longitude };
+			const { createPin } = await client.request(
+				CREATE_PIN_MUTATION,
+				variables,
+			);
+			console.log('CreatedPin', createPin);
+			handleDeleteDraft();
+		} catch (error) {
+			setSubmitting(false);
+			console.error('Error in creating Pin', error);
+		}
 	};
 	return (
 		<form className={classes.form}>
@@ -84,7 +133,7 @@ const CreatePin = ({ classes }) => {
 					type='submit'
 					variant='contained'
 					color='secondary'
-					disabled={!title.trim() || !image || !content.trim()}
+					disabled={!title.trim() || !image || !content.trim() || submitting}
 					onClick={handleSubmit}>
 					<SaveIcon className={classes.rightIcon} />
 					Submit

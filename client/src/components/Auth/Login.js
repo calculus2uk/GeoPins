@@ -14,7 +14,9 @@ const server_ULR = process.env.REACT_APP_GEOPINS_SERVER_URL;
 //
 const Login = ({ classes }) => {
 	const { dispatch } = useContext(Context);
+
 	const onFailure = (err) => console.error('Problem Loging In', err);
+
 	const onSuccess = async (googleUser) => {
 		try {
 			const idToken = googleUser.getAuthResponse().id_token;
