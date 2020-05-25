@@ -16,6 +16,8 @@ export default function reducer(state, { type, payload }) {
 			return { ...state, draft: payload };
 		case 'DELETE_DRAFT_PIN':
 			return { ...state, draft: null };
+		case 'GET_PINS':
+			return { ...state, pins: payload };
 
 		default:
 			return { state };

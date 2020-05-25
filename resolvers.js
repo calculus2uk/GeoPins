@@ -14,6 +14,12 @@ module.exports = {
 	Query: {
 		/*me: () => fakeData,*/
 		me: authenticated_HOF((parent, args, ctx) => ctx.currentUser),
+		getPins: async (parent, args, ctx) => {
+			const pins = await Pin.find({})
+				.populate('author')
+				.populate('comments.author');
+			return pins;
+		},
 	},
 	Mutation: {
 		createPin: authenticated_HOF(async (root, args, { currentUser }, info) => {

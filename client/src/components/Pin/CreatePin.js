@@ -59,7 +59,7 @@ const CreatePin = ({ classes }) => {
 				CREATE_PIN_MUTATION,
 				variables,
 			);
-			console.log('CreatedPin', createPin);
+			console.log('PIN CREATED', { createPin });
 			handleDeleteDraft();
 		} catch (error) {
 			setSubmitting(false);
