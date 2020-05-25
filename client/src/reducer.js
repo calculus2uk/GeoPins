@@ -14,6 +14,8 @@ export default function reducer(state, { type, payload }) {
 
 		case 'UPDATE_DRAFT_LOCATION':
 			return { ...state, draft: payload };
+		case 'DELETE_DRAFT_PIN':
+			return { ...state, draft: null };
 
 		default:
 			return { state };
