@@ -7,10 +7,10 @@ import AddAPhotoIcon from '@material-ui/icons/AddAPhotoTwoTone';
 import LandscapeIcon from '@material-ui/icons/LandscapeOutlined';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/SaveTwoTone';
-import { GraphQLClient } from 'graphql-request';
 
 import Context from '../../context';
 import { CREATE_PIN_MUTATION } from '../../graphql/mutations';
+import { useClient } from '../../useClientHook';
 
 const CreatePin = ({ classes }) => {
 	const {
@@ -19,6 +19,7 @@ const CreatePin = ({ classes }) => {
 		},
 		dispatch,
 	} = useContext(Context);
+	const client = useClient();
 	const [title, setTitle] = useState('');
 	const [image, setImage] = useState('');
 	const [content, setContent] = useState('');
@@ -51,16 +52,7 @@ const CreatePin = ({ classes }) => {
 		try {
 			e.preventDefault();
 			setSubmitting(true);
-			const idToken = window.gapi.auth2
-				.getAuthInstance()
-				.currentUser.get()
-				.getAuthResponse().id_token;
-			const client = new GraphQLClient(
-				process.env.REACT_APP_GEOPINS_SERVER_URL,
-				{
-					headers: { authorization: idToken },
-				},
-			);
+
 			const url = await handleImageUpload();
 			const variables = { title, image: url, content, latitude, longitude };
 			const { createPin } = await client.request(

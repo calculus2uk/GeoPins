@@ -5,11 +5,11 @@ import { GraphQLClient } from 'graphql-request';
 import Context from '../../context';
 import Typography from '@material-ui/core/Typography';
 import { ME_QUERY } from '../../graphql/queries';
+import { BASE_URL } from '../../useClientHook';
 
 //VARIABLESS
 
 const clientId = process.env.REACT_APP_GEOPINS_GOOGLE_ID;
-const server_ULR = process.env.REACT_APP_GEOPINS_SERVER_URL;
 
 //
 const Login = ({ classes }) => {
@@ -20,7 +20,7 @@ const Login = ({ classes }) => {
 	const onSuccess = async (googleUser) => {
 		try {
 			const idToken = googleUser.getAuthResponse().id_token;
-			const client = new GraphQLClient(server_ULR, {
+			const client = new GraphQLClient(BASE_URL, {
 				headers: { authorization: idToken },
 			});
 
