@@ -37,7 +37,6 @@ const Map = ({ classes }) => {
 	}, []);
 
 	const getPins = async () => {
-		console.log('calling get pins *********');
 		try {
 			const { getPins } = await client.request(GET_PINS_QUERY);
 			dispatch({ type: 'GET_PINS', payload: getPins });
@@ -99,10 +98,12 @@ const Map = ({ classes }) => {
 						<PinIcon size={40} color='hotpink' />
 					</Marker>
 				)}
+
 				{/*CREATED PINS */}
-				{state.pins.map((pin, i) => (
+
+				{state.pins.map((pin) => (
 					<Marker
-						key={pin.latitude + pin.longitude + i}
+						key={pin.latitude + pin.longitude + pin._id}
 						latitude={pin.latitude}
 						longitude={pin.longitude}
 						offsetLeft={-19}
