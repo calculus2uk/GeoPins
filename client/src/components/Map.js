@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
+import ReactMapGL, { NavigationControl, Marker, Popup } from 'react-map-gl';
 import { differenceInMinutes } from 'date-fns';
 
 import PinIcon from './PinIcon';
@@ -24,6 +24,7 @@ const INITIAL_VIEWPORT = {
 const Map = ({ classes }) => {
 	const [viewport, setViewPort] = useState(INITIAL_VIEWPORT);
 	const [userPosition, setuserPosition] = useState(null);
+	const [popup, setPopup] = useState(null);
 	const { state, dispatch } = useContext(Context);
 	const client = useClient();
 
@@ -60,7 +61,7 @@ const Map = ({ classes }) => {
 		if (!state.draft) dispatch({ type: 'CREATE_DRAFT' });
 
 		const [longitude, latitude] = lngLat;
-		console.log('object');
+
 		dispatch({
 			type: 'UPDATE_DRAFT_LOCATION',
 			payload: { longitude, latitude },
@@ -71,6 +72,10 @@ const Map = ({ classes }) => {
 		const isNewPin =
 			differenceInMinutes(Date.now(), Number(pin.createdAt)) <= 30;
 		return isNewPin ? 'limegreen' : 'darkblue';
+	};
+	const handleSelectPin = (pin) => {
+		setPopup(pin);
+		dispatch({ type: 'SET_PIN', payload: pin });
 	};
 	return (
 		<div className={classes.root}>
@@ -116,9 +121,34 @@ const Map = ({ classes }) => {
 						longitude={pin.longitude}
 						offsetLeft={-19}
 						offsetTop={-37}>
-						<PinIcon size={40} color={highlightNewPin(pin)} />
+						<PinIcon
+							size={40}
+							color={highlightNewPin(pin)}
+							onClick={() => handleSelectPin(pin)}
+						/>
 					</Marker>
 				))}
+
+				{/*POPUP DIALOG FOR CREATED PIN */}
+				{popup && (
+					<Popup
+						anchor='top'
+						latitude={popup.latitude}
+						longitude={popup.longitude}
+						closeOnClick={false}
+						onClose={() => setPopup(null)}>
+						<img
+							className={classes.popupImage}
+							src={popup.image}
+							alt={popup.title}
+						/>
+						<div className={classes.popupTab}>
+							<Typography>
+								{popup.latitude.toFixed(6)}, {popup.longitude.toFixed(6)}
+							</Typography>
+						</div>
+					</Popup>
+				)}
 			</ReactMapGL>
 			<Blog />
 		</div>
