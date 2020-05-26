@@ -77,6 +77,7 @@ const Map = ({ classes }) => {
 		setPopup(pin);
 		dispatch({ type: 'SET_PIN', payload: pin });
 	};
+	const isAAuthUser = () => state.currentUser._id === popup.author._id;
 	return (
 		<div className={classes.root}>
 			<ReactMapGL
@@ -146,6 +147,11 @@ const Map = ({ classes }) => {
 							<Typography>
 								{popup.latitude.toFixed(6)}, {popup.longitude.toFixed(6)}
 							</Typography>
+							{isAAuthUser() && (
+								<Button>
+									<DeleteIcon className={classes.deleteIcon} />{' '}
+								</Button>
+							)}
 						</div>
 					</Popup>
 				)}

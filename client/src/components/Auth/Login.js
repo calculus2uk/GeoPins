@@ -15,7 +15,7 @@ const clientId = process.env.REACT_APP_GEOPINS_GOOGLE_ID;
 const Login = ({ classes }) => {
 	const { dispatch } = useContext(Context);
 
-	const onFailure = (err) => console.error('Problem Loging In', err);
+	const onFailure = (err) => console.error('Problem Logging in', err);
 
 	const onSuccess = async (googleUser) => {
 		try {
