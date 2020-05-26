@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ReactMapGL, { NavigationControl, Marker } from 'react-map-gl';
+import { differenceInMinutes } from 'date-fns';
 
 import PinIcon from './PinIcon';
 import Context from '../context';
@@ -59,10 +60,17 @@ const Map = ({ classes }) => {
 		if (!state.draft) dispatch({ type: 'CREATE_DRAFT' });
 
 		const [longitude, latitude] = lngLat;
+		console.log('object');
 		dispatch({
 			type: 'UPDATE_DRAFT_LOCATION',
 			payload: { longitude, latitude },
 		});
+	};
+
+	const highlightNewPin = (pin) => {
+		const isNewPin =
+			differenceInMinutes(Date.now(), Number(pin.createdAt)) <= 30;
+		return isNewPin ? 'limegreen' : 'darkblue';
 	};
 	return (
 		<div className={classes.root}>
@@ -108,7 +116,7 @@ const Map = ({ classes }) => {
 						longitude={pin.longitude}
 						offsetLeft={-19}
 						offsetTop={-37}>
-						<PinIcon size={40} color='green' />
+						<PinIcon size={40} color={highlightNewPin(pin)} />
 					</Marker>
 				))}
 			</ReactMapGL>
