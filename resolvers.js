@@ -30,5 +30,9 @@ module.exports = {
 			const PinAdded = await Pin.populate(newPin, 'author');
 			return PinAdded;
 		}),
+		deletePin: authenticated_HOF(async (_, { pinId }, ctx) => {
+			const pinDeleted = await Pin.findOneAndDelete({ _id: pinId }).exec();
+			return pinDeleted;
+		}),
 	},
 };

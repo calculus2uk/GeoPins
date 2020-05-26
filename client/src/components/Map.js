@@ -14,7 +14,7 @@ import DeleteIcon from '@material-ui/icons/DeleteTwoTone';
 import { useClient } from '../useClientHook';
 
 //
-import { GET_PINS_QUERY } from '../graphql/queries';
+import { GET_PINS_QUERY, DELETE_PIN_MUTATION } from '../graphql/queries';
 
 const INITIAL_VIEWPORT = {
 	latitude: 37.7577,
@@ -77,7 +77,16 @@ const Map = ({ classes }) => {
 		setPopup(pin);
 		dispatch({ type: 'SET_PIN', payload: pin });
 	};
+
 	const isAAuthUser = () => state.currentUser._id === popup.author._id;
+
+	const handleDeletePin = async (pin) => {
+		const variables = { pinId: pin._id };
+		const { deletePin } = await client.request(DELETE_PIN_MUTATION, variables);
+		dispatch({ type: 'DELETE_PIN', payload: deletePin });
+		setPopup(null);
+	};
+
 	return (
 		<div className={classes.root}>
 			<ReactMapGL
@@ -148,7 +157,7 @@ const Map = ({ classes }) => {
 								{popup.latitude.toFixed(6)}, {popup.longitude.toFixed(6)}
 							</Typography>
 							{isAAuthUser() && (
-								<Button>
+								<Button onClick={() => handleDeletePin(popup)}>
 									<DeleteIcon className={classes.deleteIcon} />{' '}
 								</Button>
 							)}
