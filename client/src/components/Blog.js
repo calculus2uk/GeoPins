@@ -1,20 +1,28 @@
 import React, { useContext } from 'react';
+
+//
 import Context from '../context';
 import NoContent from './Pin/NoContent';
 import CreatePin from './Pin/CreatePin';
+import PinContent from './Pin/PinContent';
+
+//
 import { withStyles } from '@material-ui/core/styles';
 import { Paper } from '@material-ui/core';
 
 const Blog = ({ classes }) => {
 	const {
-		state: { draft },
+		state: { draft, CurrentPin },
 	} = useContext(Context);
 
 	let BlogContent;
-	if (!draft) {
+
+	if (!draft && !CurrentPin) {
 		BlogContent = <NoContent />;
-	} else if (draft) {
+	} else if (draft && !CurrentPin) {
 		BlogContent = <CreatePin />;
+	} else if (!draft && CurrentPin) {
+		BlogContent = <PinContent />;
 	}
 	return <Paper className={classes.root}>{BlogContent}</Paper>;
 };
